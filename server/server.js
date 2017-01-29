@@ -8,6 +8,7 @@ var request = require('request');
 const fs = require('fs');
 var WPAPI = require( 'wpapi' );
 var app = express();
+var bolds = require('./bold.json');
 var compiler = webpack(config);
 // console.log(auth);
 var wpendpoint = new WPAPI({
@@ -30,16 +31,74 @@ var user = [];
 
 var port = 3000;
 var router = express.Router();
-router.get('/createproject',function(req,res){
-  wpendpoint.posts().create({
-    // "title" and "content" are the only required properties
-    title: '1231231231',
-    status: 'publish'
-}).then(function( response ) {
-    // "response" will hold all properties of your newly-created post,
-    // including the unique `id` the post was assigned on creation
-    res.send( response);
+router.get('/bolds',function(req,res){
+  res.send(bolds)
 })
+router.get('/createprojecttest',function(req,res){
+  // console.log(bolds[0]);
+  bolds.map(function(bold){
+    var formData = {
+      "title":bold.pid,
+      "status":"publish"
+    }
+    request.post({
+      url:'http://s21451.p611.sites.pressdns.com/wp-json/wp/v2/parcels',
+      json:formData,
+      auth:{
+        user:'jian.fan',
+        pass:'Njsg1JnE6^J7v(QH6l^evH$p'
+      }
+    }, function optionalCallback(err, httpResponse, body) {
+      if (err) {
+        return res.send('upload failed:', err);
+      }
+      // console.log(res);
+
+    });
+  });
+  // res.status(200).send({"message":"Success"});
+});
+
+router.get('/length',function(req,res){
+  request('http://s21451.p611.sites.pressdns.com/wp-json/wp/v2/parcels', function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      // console.log(JSON.parse(body)) // Show the HTML for the Google homepage.
+      res.send(JSON.parse(body).length.toString());
+    }
+  })
+
+});
+router.get('/delete',function(req,res){
+  request('http://s21451.p611.sites.pressdns.com/wp-json/wp/v2/parcels', function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      JSON.parse(body).map(function(project){
+        request.delete({
+          url:'http://s21451.p611.sites.pressdns.com/wp-json/wp/v2/parcels/' + project.id,
+          auth:{
+            user:'jian.fan',
+            pass:'Njsg1JnE6^J7v(QH6l^evH$p'
+          }
+        });
+      });
+    }
+  })
+
+});
+router.get('/createproject',function(req,res){
+  // bolds.map(function(project){
+  //   if()
+  // })
+  request('http://s21451.p611.sites.pressdns.com/wp-json/wp/v2/parcels', function (error, response, body) {
+    if (!error && response.statusCode == 200) {
+      JSON.parse(body).map(function(project){
+        console.log(project.title.rendered);
+        bolds.map(function(bold){
+          if(bold.pid === project.title.rendered){
+          }
+        });
+      })
+    }
+  })
 });
 router.get('/parcels',function(req,res){
   var parcels = [];

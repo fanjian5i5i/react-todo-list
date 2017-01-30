@@ -60,7 +60,7 @@ router.get('/createprojecttest',function(req,res){
 });
 
 router.get('/length',function(req,res){
-  request('http://s21451.p611.sites.pressdns.com/wp-json/wp/v2/parcels', function (error, response, body) {
+  request('http://s21451.p611.sites.pressdns.com/wp-json/wp/v2/parcels?per_page=100', function (error, response, body) {
     if (!error && response.statusCode == 200) {
       // console.log(JSON.parse(body)) // Show the HTML for the Google homepage.
       res.send(JSON.parse(body).length.toString());
@@ -88,12 +88,13 @@ router.get('/createproject',function(req,res){
   // bolds.map(function(project){
   //   if()
   // })
-  request('http://s21451.p611.sites.pressdns.com/wp-json/wp/v2/parcels', function (error, response, body) {
+  request('http://s21451.p611.sites.pressdns.com/wp-json/wp/v2/parcels?per_page=100&page=2', function (error, response, body) {
     if (!error && response.statusCode == 200) {
       JSON.parse(body).map(function(project){
         console.log(project.title.rendered);
         bolds.map(function(bold){
           if(bold.pid === project.title.rendered){
+            console.log(bold.neighborhood)
           }
         });
       })
